@@ -37,6 +37,22 @@ fn parse_f32(str: &String, f: &mut f32) -> Result<f32, ParseFloatError> {
     }
 }
 
+fn print_roots(roots: &[f32]) {
+    let roots_joined: String = roots
+        .into_iter()
+        .map(|f| f.to_string().green().to_string())
+        .collect::<Vec<String>>()
+        .join(", ");
+    match roots.len() {
+        0 => println!("{}", "No roots".red()),
+        1 => println!("One root:\n{}", roots_joined),
+        2 => println!("Two roots:\n{}", roots_joined),
+        3 => println!("Three roots:\n{}", roots_joined),
+        4 => println!("Four roots:\n{}", roots_joined),
+        _ => panic!("Too many roots!"),
+    }
+}
+
 fn main() {
     let args: Vec<String> = env::args().collect();
     if args.len() != 1 && args.len() != 4 {
@@ -67,16 +83,23 @@ fn main() {
         }
     }
     let descriptor = b * b - 4.0 * a * c;
-    if descriptor < 0.0 {
-        println!("{}", "No roots".red());
-    } else if descriptor == 0.0 {
-        println!("One root:\n{}", (-b / 2.0 / a).to_string().green());
-    } else {
+    let mut squares = Vec::<f32>::new();
+    let mut roots = Vec::<f32>::new();
+    if descriptor == 0.0 {
+        squares.push(-b / 2.0 / a);
+    } else if descriptor > 0.0 {
         let desc_sqrt = f32::sqrt(descriptor);
-        println!(
-            "Two roots:\n{}, {}",
-            ((-b - desc_sqrt) / 2.0 / a).to_string().green(),
-            ((-b + desc_sqrt) / 2.0 / a).to_string().green(),
-        );
+        squares.push((-b - desc_sqrt) / 2.0 / a);
+        squares.push((-b + desc_sqrt) / 2.0 / a);
     }
+    for square in squares {
+        if square == 0.0 {
+            roots.push(0.0);
+        } else if square > 0.0 {
+            roots.push(-f32::sqrt(square));
+            roots.push(f32::sqrt(square));
+        }
+    }
+    roots.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    print_roots(&roots);
 }

@@ -1,5 +1,5 @@
 [package]
-name = "quad_eq_solver"
+name = "biquad_eq_solver"
 version = "0.1.0"
 edition = "2021"
 
